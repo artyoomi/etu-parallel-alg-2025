@@ -15,30 +15,20 @@ void fill_array(int* array, size_t array_size, unsigned int seed)
     }
 }
 
-int main(int argc, char* argv[])
+int task(int world_size, int world_rank, int root_rank)
 {
-    MPI_Init(&argc, &argv);
-
-    // Get rank
-    int world_rank = 0;
-    MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
-
-    // Get amount of processes
-    int world_size = 0;
-    MPI_Comm_size(MPI_COMM_WORLD, &world_size);
-
-    int root_rank = 0;
+    int *array = NULL, *sendbuf = NULL, *recvbuf = NULL;
 
     // Create and fill array with random numbers
     const size_t array_size = world_size + 5;
-    int* array = (int*)malloc(array_size * sizeof(int));
+    array = (int*)malloc(array_size * sizeof(int));
     if (!array) {
         perror("Can't allocate memory for array");
         goto free_memory;
     }
     fill_array(array, array_size, time(NULL) + world_rank);
 
-    #ifdef DEBUG
+    #if defined(DEBUG) && !defined(MEASURE_TIME)
     printf("Rank %d array: ", world_rank);
     for (size_t i = 0; i < array_size; ++i) {
         printf("%3d ", array[i]);
@@ -47,7 +37,7 @@ int main(int argc, char* argv[])
     #endif
 
     const size_t sendbuf_size = array_size * 2;
-    int* sendbuf = (int*)malloc(sendbuf_size * sizeof(int));
+    sendbuf = (int*)malloc(sendbuf_size * sizeof(int));
     if (!sendbuf) {
         perror("Can't allocate memory for sendbuf");
         goto free_memory;
@@ -59,7 +49,6 @@ int main(int argc, char* argv[])
 
     // To get return value in form: result1, index1, result2, index2, ... 
     const size_t recvbuf_size = sendbuf_size;
-    int* recvbuf = NULL;
     if (world_rank == root_rank) {
         recvbuf = (int*)malloc(recvbuf_size * sizeof(int));
         if (!recvbuf) {
@@ -70,6 +59,7 @@ int main(int argc, char* argv[])
 
     MPI_Reduce(sendbuf, recvbuf, array_size, MPI_2INT, MPI_MAXLOC, root_rank, MPI_COMM_WORLD);
 
+    #ifndef MEASURE_TIME
     if (world_rank == root_rank) {
         // Output all max values
         printf("%8s: ", "MAX");
@@ -85,11 +75,12 @@ int main(int argc, char* argv[])
         }
         putchar('\n');
     }
+    #endif
 
 free_memory:
     free(array);
     free(sendbuf);
     free(recvbuf);
 
-    return MPI_Finalize();
+    return 0;
 }
