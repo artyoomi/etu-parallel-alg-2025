@@ -1,6 +1,7 @@
 #ifndef TASK_H
 #define TASK_H
 
-int task(int world_size, int world_rank, int root_rank);
+// Variadic arguments behavior defined by task itself
+int task(int world_size, int world_rank, int n_args, char* args[]);
 
 #endif
