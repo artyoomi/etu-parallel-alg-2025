@@ -1,3 +1,5 @@
+#include "../../task.h"
+
 #include <mpi.h>
 #include <stdio.h>
 
@@ -6,23 +8,11 @@ static inline void hello(int rank)
     printf("Hello from process %d\n", rank);
 }
 
-int main(int argc, char** argv)
+int task(int world_size, int world_rank, int n_args, char* args[])
 {
-    MPI_Init(&argc, &argv);
-
-    // Get the rank of the process
-    int world_rank;
-    MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
-
     // Rank specific logic
     if (world_rank == 0) {
-        #ifdef MEASURE_TIME
-            double start = MPI_Wtime();
-        #endif
-        // Get the number of processes
-        int world_size;
-        MPI_Comm_size(MPI_COMM_WORLD, &world_size);
-        #ifdef VERBOSE
+        #ifndef MEASURE_TIME
             hello(world_rank);
         #endif
 
@@ -33,19 +23,13 @@ int main(int argc, char** argv)
         for (int i = 1; i < world_size; ++i) {
             MPI_Recv(&rank, 1, MPI_INT, MPI_ANY_SOURCE,
                      0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-            #ifdef VERBOSE
+            #ifndef MEASURE_TIME
                 hello(rank);
             #endif
         }
-        #ifdef MEASURE_TIME
-            printf("%lf\n", MPI_Wtime() - start);
-        #endif
     } else {
         MPI_Send(&world_rank, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
     }
-    
-    // Finalize the MPI environment.
-    MPI_Finalize();
 
     return 0;
 }

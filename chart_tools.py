@@ -1,5 +1,6 @@
 import argparse
 import subprocess
+import statistics
 
 import matplotlib.pyplot as plt
 
@@ -32,6 +33,14 @@ def collect_time_stats(
         if len(time_values) == 0:
             print("Empty time values list, exiting...")
             exit(1)
+
+        if len(time_values) > 1:
+            # Calculate 95th quantile of measured time values
+            time_values_95th_quantile = statistics.quantiles(
+                time_values, n=100
+            )[94]
+            time_values = [t for t in time_values if t < time_values_95th_quantile]
+
         time_stats[n] = sum(time_values) / len(time_values)
 
     return (
@@ -53,12 +62,17 @@ def setup_axes(
     # Setting up y axis
     ax.set_ylabel('Elapsed time, in seconds', fontsize=12)
 
+def calculate_acceleration(X: int, Y: float):
+    # Use last coordinates to plot acceleration chart
+    X_ac, Y_ac = X[1:], []
+    for i in range(1, len(X)):
+        Y_ac.append(Y[i] - Y[i-1])
+    return (X_ac, Y_ac)
+
 def plot_chart(ax, X: list, Y: list, label: str = None) -> None:
     ax.plot(X, Y, label=label)
     # Add this after the ax.plot(X, Y) line
     for i, (x, y) in enumerate(zip(X, Y)):
-        # if (i % 2 == 0):
-        #     continue
         ax.annotate(f'{y:.7f}',
                     (x, y),
                     textcoords="offset points",
