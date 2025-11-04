@@ -27,7 +27,9 @@ int main(int argc, char* argv[])
     #endif
 
     if (task(world_size, world_rank, argc, argv)) {
-        perror("Unable to recover from error in main task");
+        if (world_rank == 0) {
+            fprintf(stderr, "Unable to recover from error in task\n");
+        }
         goto finalize;
     }
 

@@ -111,13 +111,13 @@ def parse_cli():
         required=True,
         help="argv of program to run with mpirun"
     )
-    parser.add_argument(
-        "-o",
-        "--output",
-        type=str,
-        default="chart.png",
-        help="Chart image filename"
-    )
+    # parser.add_argument(
+    #     "-o",
+    #     "--output",
+    #     type=str,
+    #     default="chart.png",
+    #     help="Chart image filename"
+    # )
 
     return parser.parse_args()
 
@@ -132,4 +132,4 @@ if __name__ == "__main__":
     setup_axes(fig, ax)
     plot_chart(ax, X, Y)
 
-    fig.savefig(args.output, dpi=300, bbox_inches="tight", facecolor="white")
+    fig.savefig("chart.png", dpi=300, bbox_inches="tight", facecolor="white")
