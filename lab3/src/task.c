@@ -4,19 +4,13 @@
 #include <stdlib.h>
 #include <time.h>
 
+#include "../../task.h"
+#include "../../common.h"
 
-void fill_array(int* array, size_t array_size, unsigned int seed)
+int task(int world_size, int world_rank, ...)
 {
-    srand(seed);
-
-    const int upper_bound = 1000;
-    for (size_t i = 0; i < array_size; ++i) {
-        array[i] = rand() % upper_bound;
-    }
-}
-
-int task(int world_size, int world_rank, int root_rank)
-{
+    int root_rank = 0;
+    
     int *array = NULL, *sendbuf = NULL, *recvbuf = NULL;
 
     // Create and fill array with random numbers
@@ -26,7 +20,7 @@ int task(int world_size, int world_rank, int root_rank)
         perror("Can't allocate memory for array");
         goto free_memory;
     }
-    fill_array(array, array_size, time(NULL) + world_rank);
+    generate_array(array, array_size, time(NULL) + world_rank);
 
     #if defined(DEBUG) && !defined(MEASURE_TIME)
     printf("Rank %d array: ", world_rank);

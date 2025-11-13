@@ -78,7 +78,6 @@ int task(int world_size, int world_rank, int n_args, char* args[])
         K = world_size - 1;
         #endif
     }
-    MPI_Barrier(MPI_COMM_WORLD);
 
     #ifndef MEASURE_TIME
     // Send validation result to all processes

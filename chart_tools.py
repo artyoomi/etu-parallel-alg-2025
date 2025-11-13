@@ -111,13 +111,6 @@ def parse_cli():
         required=True,
         help="argv of program to run with mpirun"
     )
-    # parser.add_argument(
-    #     "-o",
-    #     "--output",
-    #     type=str,
-    #     default="chart.png",
-    #     help="Chart image filename"
-    # )
 
     return parser.parse_args()
 

@@ -15,7 +15,6 @@ if __name__ == "__main__":
     X, Y = [], []
     for size in [100_000, 1_000_000, 5_000_000, 10_000_000]:
         print(f"Start collecting time for array with size={size}")
-            # n_values = [2, 8, 14, 20, 26, 32, 38, 44, 50, 56, 62]
         X, Y = chart_tools.collect_time_stats(
             f"{args.argv} {size}",
             args.averaging_parameter,
