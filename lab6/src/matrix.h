@@ -7,7 +7,7 @@
 typedef struct {
     int   n;
     int   m;
-    int** data;
+    int* data;
 } matrix_t;
 
 int  matrix_init     (int n, int m, matrix_t* matrix);
