@@ -5,6 +5,11 @@ int matrix_init(int n, int m, matrix_t* matrix)
     matrix->n = n;
     matrix->m = m;
 
+    if (n == 0 && m == 0) {
+        matrix->data = NULL;
+        return 0;
+    }
+
     matrix->data = (int*)malloc(n * m * sizeof(int*));
     if (!matrix->data) { return 1; }
 
@@ -70,4 +75,20 @@ void matrix_free(matrix_t* matrix)
 
     matrix->n = 0;
     matrix->m = 0;
+}
+
+int matrix_gen(matrix_t* matrix, int n, int m)
+{
+    if (matrix_init(n, m, matrix)) {
+        return 1;
+    }
+
+    srand(time(NULL));
+
+    for (size_t i = 0; i < matrix->n; ++i) {
+        for (size_t j = 0; j < matrix->m; ++j) {
+            matrix->data[i * matrix->m + j] = rand() % 100;
+        }
+    }
+    return 0;
 }
