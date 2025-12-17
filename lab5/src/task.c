@@ -32,13 +32,13 @@ int task(int world_size, int world_rank, int n_args, char* args[])
     // Create second subgrid
     MPI_Comm row2_comm;
     int remain_dims2[] = {0, 1};
-    MPI_Cart_sub(grid_comm, remain_dims2, &row1_comm);
+    MPI_Cart_sub(grid_comm, remain_dims2, &row2_comm);
 
     // Generate A value
     float A = 0;
-    if (world_rank == 0 || world_rank == N) {
+    if (world_rank == 0 || world_rank == N - 1) {
         srand(time(NULL) + world_rank);
-        A = (float)(rand() % 10000);
+        A = (float)(rand() % 1000);
     }
 
     if (row1_comm != MPI_COMM_NULL) {
